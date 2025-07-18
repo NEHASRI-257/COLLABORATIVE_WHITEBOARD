@@ -25,6 +25,10 @@ This project provided a comprehensive, hands-on experience in building real-time
 
 ## 📸 Demo Snapshots
 
+<img width="1589" height="812" alt="Image" src="https://github.com/user-attachments/assets/a4bebbbe-6d90-4f4e-8924-29f9835ad346" />
+<img width="1366" height="711" alt="Image" src="https://github.com/user-attachments/assets/46324ba0-a54f-4fe9-b020-a34f5aa3dae3" />
+<img width="1491" height="683" alt="Image" src="https://github.com/user-attachments/assets/509fbc36-255e-4248-8b8b-f599db692068" />
+
 ### 1️⃣ First Photo: Blank Whiteboard Interface
 **Caption:**  
 “Each participant starts with a clean, browser-based whiteboard. All drawing tools—including color picker, brush size slider, eraser, and clear buttons—are available, providing an intuitive interface for collaborative work.”
