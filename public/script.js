@@ -4,112 +4,22 @@ let test = document.getElementById("test");
 canvas.width = 0.98 * window.innerWidth;
 canvas.height = window.innerHeight;
 
-var io = io(); // Connects to same domain/server
-
 let ctx = canvas.getContext("2d");
+let socket = io(); // Connect to backend
 
-let x;
-let y;
+let x, y;
 let mouseDown = false;
-let dataChannel;
-const servers = {
-  iceServers: [
-    {
-      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
-    },
-  ],
-  iceCandidatePoolSize: 10,
-};
-let pc = new RTCPeerConnection(servers);
-let remoteStream;
-
-console.log("created data channels");
-
-function applyEvents() {
-  dataChannel.onmessage = (e) => {
-    let data = JSON.parse(e.data);
-
-    if (data.draw) {
-      ctx.strokeStyle = isEraser ? "#FFFFFF" : selectedColor;
-      ctx.lineWidth = selectedSize;
-      ctx.lineTo(data.draw.x, data.draw.y);
-      ctx.stroke();
-    }
-    if (data.down) {
-      ctx.moveTo(data.down.x, data.down.y);
-    }
-  };
-}
-
-window.onload = async () => {
-  pc.addEventListener("connectionstatechange", (event) => {
-    if (pc.connectionState === "connected") {
-      console.log("WebRTC connection established");
-    }
-  });
-
-  pc.ondatachannel = (e) => {
-    console.log("received data channel");
-    dataChannel = e.channel;
-    applyEvents();
-  };
-
-  dataChannel = pc.createDataChannel("test");
-
-  let stream = await navigator.mediaDevices.getUserMedia({ video: true });
-
-  stream.getTracks().forEach((track) => {
-    pc.addTrack(track, stream);
-  });
-
-  remoteStream = new MediaStream();
-
-  pc.ontrack = (event) => {
-    event.streams[0].getTracks().forEach((track) => {
-      remoteStream.addTrack(track);
-    });
-  };
-
-  test.srcObject = remoteStream;
-
-  pc.onicecandidate = (event) => {
-    if (event.candidate) {
-      io.emit("propogate", { ice: event.candidate });
-    }
-  };
-
-  let offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-  io.emit("propogate", {
-    offer: { type: offer.type, sdp: offer.sdp },
-  });
-};
-
-io.on("onpropogate", async (data) => {
-  if (data.offer) {
-    await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-    let answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    io.emit("propogate", { answer });
-  }
-  if (data.answer) {
-    await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-  }
-  if (data.ice) {
-    await pc.addIceCandidate(data.ice);
-  }
-});
-
-// Drawing tools
 let selectedColor = "#000000";
 let selectedSize = 3;
 let isEraser = false;
 
+// 🎨 UI elements
 const colorPicker = document.getElementById("colorPicker");
 const brushSize = document.getElementById("brushSize");
 const eraserBtn = document.getElementById("eraser");
 const clearBtn = document.getElementById("clear");
 
+// UI Event Handlers
 colorPicker.oninput = (e) => {
   selectedColor = e.target.value;
   isEraser = false;
@@ -125,17 +35,15 @@ eraserBtn.onclick = () => {
 
 clearBtn.onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  socket.emit("clear");
 };
 
-// Drawing events
-window.onmousedown = (e) => {
+// 🖌️ Drawing Events
+window.onmousedown = () => {
   ctx.beginPath();
   ctx.moveTo(x, y);
   mouseDown = true;
-
-  if (dataChannel) {
-    dataChannel.send(JSON.stringify({ down: { x, y } }));
-  }
+  socket.emit("mousedown", { x, y });
 };
 
 window.onmouseup = () => {
@@ -152,8 +60,85 @@ window.onmousemove = (e) => {
     ctx.lineTo(x, y);
     ctx.stroke();
 
-    if (dataChannel) {
-      dataChannel.send(JSON.stringify({ draw: { x, y } }));
-    }
+    socket.emit("draw", {
+      x,
+      y,
+      color: selectedColor,
+      size: selectedSize,
+      eraser: isEraser,
+    });
   }
 };
+
+// 📡 Socket.IO listeners
+socket.on("onmousedown", ({ x, y }) => {
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+});
+
+socket.on("ondraw", ({ x, y, color, size, eraser }) => {
+  ctx.strokeStyle = eraser ? "#FFFFFF" : color;
+  ctx.lineWidth = size;
+  ctx.lineTo(x, y);
+  ctx.stroke();
+});
+
+socket.on("onclear", () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+// 📹 WebRTC for Video (no drawing)
+let pc = new RTCPeerConnection({
+  iceServers: [
+    {
+      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+    },
+  ],
+  iceCandidatePoolSize: 10,
+});
+
+let remoteStream = new MediaStream();
+
+window.onload = async () => {
+  pc.addEventListener("connectionstatechange", () => {
+    if (pc.connectionState === "connected") {
+      console.log("WebRTC connection established");
+    }
+  });
+
+  pc.ontrack = (event) => {
+    event.streams[0].getTracks().forEach((track) => {
+      remoteStream.addTrack(track);
+    });
+  };
+
+  test.srcObject = remoteStream;
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.emit("propogate", { ice: event.candidate });
+    }
+  };
+
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  socket.emit("propogate", { offer: { type: offer.type, sdp: offer.sdp } });
+};
+
+socket.on("onpropogate", async (data) => {
+  if (data.offer) {
+    await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit("propogate", { answer });
+  }
+  if (data.answer) {
+    await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+  }
+  if (data.ice) {
+    await pc.addIceCandidate(data.ice);
+  }
+});
