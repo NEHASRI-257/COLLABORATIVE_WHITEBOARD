@@ -25,9 +25,9 @@ This project provided a comprehensive, hands-on experience in building real-time
 
 ## 📸 Demo Snapshots
 
-<img width="1589" height="812" alt="Image" src="https://github.com/user-attachments/assets/a4bebbbe-6d90-4f4e-8924-29f9835ad346" />
-<img width="1366" height="711" alt="Image" src="https://github.com/user-attachments/assets/46324ba0-a54f-4fe9-b020-a34f5aa3dae3" />
-<img width="1491" height="683" alt="Image" src="https://github.com/user-attachments/assets/509fbc36-255e-4248-8b8b-f599db692068" />
+<img width="1609" height="832" alt="Image" src="https://github.com/user-attachments/assets/96f80bf2-b6c9-4c0a-a0af-87625b5e9f85" />
+<img width="1386" height="731" alt="Image" src="https://github.com/user-attachments/assets/c2da5a25-81db-4f8f-8696-0f3b7ea1302e" />
+<img width="1511" height="703" alt="Image" src="https://github.com/user-attachments/assets/42456b32-db9b-42df-bdc2-1678c0397dd6" />
 
 ### 1️⃣ First Photo: Blank Whiteboard Interface
 **Caption:**  
