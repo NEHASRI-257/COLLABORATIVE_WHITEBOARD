@@ -5,61 +5,38 @@
 ##  Duration: 8 WEEKS
 ##  Mentor:NEELA SANTHOSH
 
-##  Project Task Description — Real-Time Collaborative Whiteboard
+# 📌 Project Overview – Real-Time Collaborative Whiteboard
 
-As part of my role at **CodTech IT Solutions**, I independently developed a real-time collaborative whiteboard web application. This project combined real-time drawing with peer-to-peer video communication, allowing multiple users to collaborate visually and verbally on a shared canvas from anywhere in the world.
+As part of my internship at **CodTech IT Solutions**, I independently conceptualized, designed, and developed a fully functional real-time collaborative whiteboard application. Built entirely using **vanilla JavaScript**, **Node.js**, **Express**, **Socket.IO**, and **WebRTC**, the application enables users to draw simultaneously on a shared canvas while engaging in peer-to-peer video communication — all within a web browser and without the need for external libraries or frameworks.
 
-### Objective  
-The goal of this project was to build an interactive, web-based whiteboard tool that supports simultaneous collaboration. The application needed to offer drawing tools, real-time synchronization, and embedded video calling—all in a lightweight and browser-accessible interface. An emphasis was placed on low latency, usability, and modern web standards.
+I began by developing the **frontend user interface** using **HTML5 Canvas**, styled with **CSS**, and driven by **JavaScript**. The canvas served as the interactive drawing area and was programmed to respond to mouse inputs for freehand sketching. I implemented several essential tools including a **color picker**, **brush size control**, **eraser mode**, and a **clear canvas button**. This combination allowed users to create and edit visuals collaboratively with ease, simulating a physical whiteboard experience in a digital format.
 
-###  Development Process  
+To achieve **real-time drawing synchronization** across users, I integrated **Socket.IO** on both the client and server sides. The **Node.js** and **Express** backend listens for socket events — such as draw strokes, brush changes, or canvas clearing — and rebroadcasts these events to all other connected users except the initiator. Each drawing event was serialized into coordinate and style data and emitted over the WebSocket channel. On the receiving end, client browsers would decode the data and replicate the exact drawing on their own canvas in real time, ensuring full synchronization among participants.
 
-#### UI & Drawing Layer  
-The frontend was built using **HTML5**, **CSS**, and **vanilla JavaScript**. The core drawing experience was implemented using the **HTML5 `<canvas>`** element. Custom JavaScript was written to handle:
-- Mouse and touch events for drawing lines  
-- A **color picker** to choose brush colors  
-- **Brush size control** for variable stroke widths  
-- An **eraser tool** to remove specific parts of the drawing  
-- A **clear canvas** button to reset the board for all users  
+In addition to visual collaboration, I implemented **WebRTC** to enable **live video communication**. Each user's webcam and microphone stream is accessed using the `navigator.mediaDevices.getUserMedia` API. I used **Socket.IO** as a signaling mechanism to exchange **WebRTC session descriptions** and **ICE candidates** between peers, allowing them to establish a direct media stream connection. Once connected, users could see and hear each other while using the whiteboard, significantly improving the collaborative experience.
 
-The interface was designed to be clean and distraction-free, focusing on ease of collaboration.
+The server played a critical role in both managing user connections and facilitating WebRTC signaling. All socket communications were maintained in memory, and no database layer was required, making the system highly lightweight, fast, and session-based. This approach ensured optimal performance, especially for short-lived collaborative sessions.
 
-#### Real-Time Collaboration  
-Real-time drawing functionality was enabled using **Socket.IO**, which allowed each user’s strokes to be broadcast and mirrored across all connected clients instantly. I created custom socket events to handle draw actions, color changes, and canvas resets.
+Finally, I deployed the backend on **Render**, which made the application publicly accessible via a secure HTTPS link. I thoroughly tested the system across multiple browsers and devices to ensure stable canvas synchronization and reliable video performance. Users were able to draw together and communicate in real time, even when accessing the application from different locations and networks.
 
-To ensure smooth performance, drawing data was sent at optimized intervals to balance speed and bandwidth. Each client's canvas state stayed synchronized regardless of how many participants joined the session.
+This project provided a comprehensive, hands-on experience in building real-time web applications. It strengthened my skills in **event-driven programming**, **peer-to-peer communication**, and **full-stack JavaScript development** using modern browser APIs and networking tools.
 
-#### Peer-to-Peer Video Integration  
-For live video collaboration, I implemented **WebRTC**. This allowed users to initiate **peer-to-peer video calls** within the whiteboard session without relying on third-party services.
+---
 
-Features included:
-- Accessing webcam and microphone using browser APIs  
-- Creating peer connections via **WebRTC RTCPeerConnection**  
-- Using **Socket.IO** as the signaling channel for offer/answer negotiation  
-- Exchanging ICE candidates to establish a stable video stream between users  
+## 📸 Demo Snapshots
 
-The integration ensured minimal delay in video transmission and enabled natural communication alongside visual collaboration.
+### 1️⃣ First Photo: Blank Whiteboard Interface
+**Caption:**  
+“Each participant starts with a clean, browser-based whiteboard. All drawing tools—including color picker, brush size slider, eraser, and clear buttons—are available, providing an intuitive interface for collaborative work.”
 
-#### Backend Setup  
-The backend was built using **Node.js** and **Express.js**. It served the static frontend files and handled WebSocket events via **Socket.IO**. No database was required, as session state was managed entirely in memory.
+### 2️⃣ Second Photo: Black Stroke Drawn  
+**Caption:**  
+“One user begins drawing by creating a black line on the canvas. In a real-time session, this stroke appears instantly on every participant’s screen, ensuring immediate synchronization and feedback.”
 
-The server responsibilities included:
-- Hosting static assets  
-- Handling socket connections and signaling  
-- Managing WebRTC offer/answer exchanges between clients
+### 3️⃣ Third Photo: Green Thick Stroke (Second User)  
+**Caption:**  
+“Another user selects a green color and larger brush size, adding a new line below the first. All edits and strokes—regardless of color or thickness—are immediately broadcast and reflected for all connected users, demonstrating seamless multi-user collaboration.”
 
-#### Deployment  
-The project was deployed on **Render**, offering public access to the live whiteboard at [https://whiteboard-916d.onrender.com](https://whiteboard-916d.onrender.com). The deployment supports HTTPS and enables secure peer-to-peer connections across devices.
 
-#### Testing & Validation  
-I tested the application on multiple browsers and devices to ensure:
-- Real-time drawing synchronization  
-- Stable video communication  
-- Responsive UI design  
-- Cross-tab and multi-user functionality
 
-### ✅ Outcome  
-The **Real-Time Collaborative Whiteboard** is a fully functional web application that combines canvas drawing with live video communication. The project strengthened my expertise in **WebRTC**, **Socket.IO**, and real-time application architecture using only frontend and backend JavaScript technologies.
-
-<img width="1849" height="816" alt="Image" src="https://github.com/user-attachments/assets/c983551b-8a8b-42fd-ae62-c74e12fe9fec" />
 
